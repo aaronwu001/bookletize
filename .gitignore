@@ -4,3 +4,6 @@ build/
 dist/
 .venv/
 *_booklet*.pdf
+# raw phone videos carry GPS location; commit only the stripped docs/demo.* files
+*.MOV
+*.mov

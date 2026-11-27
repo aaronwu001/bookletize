@@ -17,6 +17,10 @@ Original PDF                    Printed sheet (front)
                                └─────────┴─────────┘
 ```
 
+What a printed booklet looks like ([MP4 version](docs/demo.mp4)):
+
+<img src="docs/demo.gif" alt="Flipping through a printed and stapled booklet" width="280">
+
 ## Features
 
 - **Page ranges**: print only the pages you need, including non-contiguous ranges (`41-51,102-114,332`).
