@@ -37,27 +37,28 @@ python -m build           # wheel + sdist into dist/
   and avoids pypdf 7's restriction on modifying pages not attached to a writer. Do not switch back to
   `merge_transformed_page` / `transfer_rotation_to_content`.
 - `/Rotate` is handled inside `page_matrix()`, not by modifying the source page.
-- Must work with pypdf 6 and 7.
+- Must work with pypdf 6 and 7. CI tests pypdf 6 on the ubuntu-24.04 / Python 3.9 job
+  (ubuntu-latest has no Python 3.9).
+- Printable annotations (highlights, comments, filled form fields) are drawn into the page XObject
+  from their `/AP /N` streams, like a viewer printing; hidden or non-print annotations are skipped.
+  Page `/Resources` may be shared between pages, so copy the cloned dict before adding to it.
+- Dependency is `pypdf[crypto]` so AES-encrypted PDFs (owner password only) open; this also gets
+  `cryptography` into the PyInstaller .exe. PDFs needing a user password raise `BookletError`.
+- Bad input (unreadable, password, no pages, margin too large) raises `BookletError` from core;
+  the CLI also turns `PyPdfError` / `OSError` into `error: ...` with exit code 2.
 - Several booklets are written to separate files by default; `--merge` puts them in one file.
 - Each booklet is padded to a multiple of 4 independently.
 - `--margin` is in millimetres on the CLI and GUI; `core.make_booklets(margin=...)` takes points.
 - User-facing text and docs: do not use a double dash as punctuation (CLI flags are fine).
 
-## First-time setup checklist (for Claude Code)
+## Releasing
 
-The owner only has the old single-file `booklet.py`; this repo replaces it. Steps:
+Repo: github.com/aaronwu001/bookletize (WSL has `gh` logged in as aaronwu001).
 
-1. Ask the owner for their GitHub username, then replace `<your-username>` in `README.md`
-   and `<你的帳號>` in `docs/使用說明.txt`.
-2. Confirm the name in `LICENSE` (currently "Aaron").
-3. Create a venv, `pip install -e ".[dev]"`, run `pytest -q` (expect all tests to pass).
-4. `sudo apt install python3-tk` if needed, then launch `bookletize-gui` once to check it opens.
-5. `git init -b main`, commit everything, `gh repo create bookletize --public --source . --push`.
-6. Check the CI workflow passes on GitHub (`gh run watch`).
-7. Release: `git tag v1.0.0 && git push origin v1.0.0`; the Release workflow attaches the wheel and
-   `bookletize-gui.exe` / `bookletize.exe`. Ask the owner to download the .exe on Windows and test it.
-8. Optional PyPI: check the name `bookletize` is still free on pypi.org, register the repo as a
-   Trusted Publisher (workflow `release.yml`, environment `pypi`), set repo variable
-   `PUBLISH_PYPI=true`, then push a new tag. Bump `version` in both `pyproject.toml` and
-   `src/bookletize/__init__.py` first.
-9. Delete this checklist section once done.
+1. Bump `version` in both `pyproject.toml` and `src/bookletize/__init__.py`.
+2. `git tag vX.Y.Z && git push origin vX.Y.Z`; the Release workflow attaches the wheel, sdist,
+   `bookletize-gui.exe` and `bookletize.exe` to a GitHub Release.
+3. Ask the owner to test the .exe on Windows.
+
+PyPI publishing is not used (the owner decided against it); the `pypi` job stays off unless the
+repo variable `PUBLISH_PYPI=true` is set.
