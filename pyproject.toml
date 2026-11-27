@@ -9,7 +9,8 @@ description = "Turn PDF pages (or chapters) into foldable, saddle-stitched bookl
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
-dependencies = ["pypdf>=6"]
+# [crypto] pulls in cryptography, needed to open AES-encrypted PDFs
+dependencies = ["pypdf[crypto]>=6"]
 keywords = ["pdf", "booklet", "imposition", "print", "saddle-stitch"]
 classifiers = [
     "Programming Language :: Python :: 3",

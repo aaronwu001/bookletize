@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+from pypdf.errors import PyPdfError
+
 from . import __version__
 from .core import MM, PAPER, BookletError, format_summary, make_booklets
 
@@ -67,7 +69,10 @@ def main(argv=None) -> int:
             output=args.output,
             progress=progress,
         )
-    except (BookletError, FileNotFoundError) as e:
+    except (BookletError, PyPdfError, OSError) as e:
+        # OSError: missing input, or output still open in a PDF viewer on Windows
+        if tty:
+            print()
         print(f"error: {e}", file=sys.stderr)
         return 2
     print()

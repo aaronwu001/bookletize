@@ -19,6 +19,7 @@ jobs:
         include:
           - os: ubuntu-24.04
             python: "3.9"
+            pypdf: ">=6,<7"  # oldest supported Python and pypdf together
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +27,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -e ".[dev]"
+      - if: matrix.pypdf
+        run: python -m pip install "pypdf[crypto]${{ matrix.pypdf }}"
+      - run: python -c "import pypdf; print('pypdf', pypdf.__version__)"
       - run: python -m pytest -q
       - name: CLI smoke test
         run: python -m bookletize --version
