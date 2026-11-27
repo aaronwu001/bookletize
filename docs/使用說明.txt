@@ -1,0 +1,151 @@
+bookletize 使用說明
+====================
+
+這個工具會把 PDF 重新排版，讓你印出來之後可以直接對折、從中間釘起來，變成一本小冊子。
+
+
+一、安裝
+--------
+
+Windows 不想裝 Python 的話：
+  到 GitHub 的 Releases 頁面下載 bookletize-gui.exe，直接點兩下執行。
+
+用 pip 安裝：
+
+需要 Python 3.9 以上：
+
+    pip install git+https://github.com/aaronwu001/bookletize.git
+
+  Windows 上如果找不到 pip 指令，改用：
+
+    python -m pip install git+https://github.com/aaronwu001/bookletize.git
+
+安裝後會有兩個指令：
+  bookletize       終端機版
+  bookletize-gui   視窗版（選檔案、填頁碼、按按鈕）
+
+如果找不到指令，改用：
+  python -m bookletize
+  python -m bookletize.gui
+
+
+二、基本用法
+------------
+
+整份 PDF 排成一本：
+
+    bookletize book.pdf
+
+只印其中幾頁（第 5 到 40 頁）：
+
+    bookletize book.pdf -r 5-40
+
+多段範圍合成一本：
+
+    bookletize book.pdf -r 1-3,10-20
+
+輸出檔名預設是 book_booklet.pdf。
+用 -o 可以指定檔名：
+
+    bookletize book.pdf -o 我的書.pdf
+
+
+三、多個章節，每章各自一本
+--------------------------
+
+章節都在同一個 PDF 裡：
+每個 -c 給一章的頁碼範圍。
+
+    bookletize book.pdf -c 1-12 -c 13-30 -c 31-45
+
+一本裡面要放好幾段不連續的頁碼：
+在同一個 -c 裡用逗號分開，並加上引號（PowerShell 一定要加）。
+
+    bookletize ostep.pdf -c "262-269,273-287,291-312" -c "315-329,333-342,345-364"
+
+  這樣會印出兩本，每本各包含三段頁碼。
+
+章節是不同的檔案：
+依序列出檔案，每個檔案自成一本。
+
+    bookletize ch1.pdf ch2.pdf ch3.pdf
+
+輸出檔案：
+- 預設每一本各自輸出一個 PDF，例如：
+    book_booklet_book1.pdf
+    book_booklet_book2.pdf
+- 想把所有本合在同一個 PDF（一次印完），加上 --merge：
+
+    bookletize book.pdf -c 1-12 -c 13-30 -c 31-45 --merge
+
+  合在一起時，每一本都從新的一張紙開始；
+  照表格的 Location 欄數紙張，就能分成好幾疊。
+
+    #  Source pages  Pages  Blank  Sheets  Location
+    -  ------------  -----  -----  ------  -----------
+    1  1-12             12     +0       3  sheet 1-3
+    2  13-30            18     +2       5  sheet 4-8
+    3  31-45            15     +1       4  sheet 9-12
+
+  欄位說明：
+    Source pages  這一本用到原始 PDF 的哪些頁
+    Pages         實際內容頁數
+    Blank         補上的空白頁數（補到 4 的倍數）
+    Sheets        這一本用幾張紙
+    Stacks        分成幾小疊（只有用 -s 時才會出現）
+    Location      這一本的輸出檔名；用 --merge 時顯示在第幾張紙
+
+
+四、所有選項
+------------
+
+  -r 範圍           只排指定頁碼成一本，例如 5-40 或 1-3,10-20
+  -c 範圍           一個章節的頁碼範圍，可以重複使用，每章各自一本
+                    （-r 和 -c 不能同時用）
+  --merge           所有本合成一個 PDF（預設是每本一個檔案）
+  -s 頁數           分冊（signature），每 N 頁自成一小疊，N 必須是 4 的倍數
+  --blank-start N   在每一本最前面加 N 頁空白
+  -o 檔名           指定輸出檔名
+  --paper 紙張      a4（預設）、letter、a3
+  --margin 數值     每頁四周留白，單位是 mm
+
+範圍的寫法：
+  5-40      第 5 到 40 頁
+  7         只有第 7 頁
+  10-       第 10 頁到最後
+  1-3,7     第 1 到 3 頁，加上第 7 頁
+
+
+五、列印設定（很重要）
+----------------------
+
+1. 雙面列印
+2. 選 Flip on short edge（短邊翻頁）
+3. 縮放選 Actual size / 100%，不要選 Fit
+
+印完之後：
+- 整疊不要打亂，直接對折
+- 從折線中間釘起來（騎馬釘）
+
+
+六、常見問題
+------------
+
+為什麼有空白頁？
+  一張紙對折後是 4 頁，所以頁數會補到 4 的倍數。
+  補上的空白頁放在每一本的最後面。
+
+書太厚折不起來？
+  大約超過 10 張紙（40 頁）時，對折會太厚，外側的頁也會往外凸。
+  用 -s 16 讓每 4 張紙自成一小疊，各自對折後再疊起來裝訂。
+
+    bookletize book.pdf -s 16
+
+想要封面後面空一頁？
+  用 --blank-start 1，每一本前面都會多一頁空白。
+
+    bookletize book.pdf -c 1-12 -c 13-30 --blank-start 1
+
+印出來順序不對？
+  通常是印表機設成 Flip on long edge。
+  改成 Flip on short edge 再印一次。
