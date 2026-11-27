@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bookletize"
-version = "1.0.0"
+version = "1.0.1"
 description = "Turn PDF pages (or chapters) into foldable, saddle-stitched booklets"
 readme = "README.md"
 license = "MIT"
