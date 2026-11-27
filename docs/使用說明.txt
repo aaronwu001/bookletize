@@ -9,6 +9,14 @@ bookletize 使用說明
 
 Windows 不想裝 Python 的話：
   到 GitHub 的 Releases 頁面下載 bookletize-gui.exe，直接點兩下執行。
+  Python 和需要的套件都已經包在裡面，電腦上不用另外安裝任何東西。
+
+  注意：
+  * 這個 exe 沒有數位簽章，第一次開啟時 Windows 可能會跳出藍色的
+    「Windows 已保護您的電腦」。按「其他資訊」再按「仍要執行」即可。
+    少數防毒軟體也可能誤判，加入例外就好。
+  * 每次開啟要先解壓縮內建的 Python，等幾秒才出現視窗是正常的。
+  * exe 只能在 Windows 上用。Mac 和 Linux 請用下面的 pip 方式安裝。
 
 用 pip 安裝：
 

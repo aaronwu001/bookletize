@@ -33,6 +33,12 @@ Original PDF                    Printed sheet (front)
 ### Windows, no Python needed
 
 Download `bookletize-gui.exe` from the [Releases](https://github.com/aaronwu001/bookletize/releases) page and double-click it.
+Python and all dependencies are bundled inside, so nothing else needs to be installed.
+
+- The `.exe` is not code-signed, so Windows SmartScreen may show "Windows protected your PC" the first time.
+  Click **More info**, then **Run anyway**. Some antivirus programs also flag PyInstaller builds by mistake.
+- It takes a few seconds to open, because the bundled Python is unpacked on every start.
+- The `.exe` is Windows only. On macOS and Linux, install with pip (below).
 
 ### With pip
 
